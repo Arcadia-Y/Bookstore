@@ -11,4 +11,38 @@ _By Arcadia-Y_
 将各子系统封装为类，main函数读取指令后再根据指令调用相应类的相关函数。
 
 ## 代码架构
-//todo
+程序代码主要有以下几个类：
+
+```cpp
+template<typename Element>
+class blocklist
+```
+声明于blocklist.h，即块状链表类，将指定类型的数据以块状链表的结构存储于硬盘中，支持插入、删除、查询等操作。用于账户信息、图书信息、日志信息的存储。
+```cpp
+class user
+```
+声明于user.h，存储一个用户的用户名、密码、权限等账户信息，支持检查密码、修改密码等功能。
+```cpp
+class user_system
+```
+声明于user.h，以块状链表存储所有用户的账户信息，支持注册账户、创建账户、删除账户等功能。
+```cpp
+class login_stack
+```
+声明于user.h，即登录栈，记录账户登录状态，支持登录账户、注销账户等功能。
+```cpp
+class book
+```
+声明于book.h，存储一本书籍的信息，支持修改图书信息的功能。
+```cpp
+class book_system
+```
+声明于book.h，以块状链表存储所有图书的信息，支持检索、购买、进货等操作。
+```cpp
+struct transaction
+```
+声明于log.h，记录单笔交易的相关信息。
+```cpp
+class log_system
+```
+声明于log.h，存储财务记录及用户操作记录，支持财务记录查询和生成日志等功能。
