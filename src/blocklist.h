@@ -5,7 +5,7 @@
 #include <cstring>
 #include <algorithm>
 
-#define MAX_SIZE 600
+#define MAX_SIZE 800
 
 template<typename key_type, typename value_type>
 class Blocklist
