@@ -10,13 +10,12 @@
 template<typename key_type, typename value_type>
 class Blocklist
 {
-    char fname[64];
     char index_name[64];
 
     struct element
     {
         key_type key;
-        long address;
+        value_type value;
         friend bool operator<(const element &a, const element &b)
         {
             return a.key < b.key;
@@ -59,45 +58,15 @@ class Blocklist
         return now;
     }
 
-    // write a new value into data file, return address
-    long writedata(const value_type &value) 
-    {
-        std::fstream fdata;
-        fdata.open(fname);
-        fdata.seekg(0);
-        long address;
-        fdata.read(reinterpret_cast <char *> (&address), sizeof(long));
-        fdata.seekp(address);
-        fdata.write(reinterpret_cast <const char *> (&value), sizeof(value_type));
-        address += sizeof(value_type);
-        fdata.seekp(0);
-        fdata.write(reinterpret_cast <char *> (&address), sizeof(long));
-        return address - sizeof(value_type);
-    }
-
-    // modify existd data
-    void modifydata(long address, const value_type &value) 
-    {
-        std::fstream fdata;
-        fdata.open(fname);
-        fdata.seekp(address);
-        fdata.write(reinterpret_cast <const char *> (&value), sizeof(value_type));
-    }
-
 public:
     // create files and write some metadata
     Blocklist(const char *name)
     {
-        strcpy(fname, name);
-        strcpy(index_name, fname);
-        strcat(index_name, "_index");
-        std::fstream fdata, findex;
-        fdata.open(fname);
-        if (fdata.good()) return;
-        fdata.open(fname, std::ios::out);
+        strcpy(index_name, name);
+        std::fstream findex;
+        findex.open(index_name);
+        if (findex.good()) return;
         findex.open(index_name, std::ios::out);
-        long cursor = sizeof(long);
-        fdata.write(reinterpret_cast<char*> (&cursor), sizeof(long));
         long end = sizeof(long);
         findex.write(reinterpret_cast <char *> (&end), sizeof(long));
     }
@@ -120,7 +89,7 @@ public:
             node tmp;
             tmp.info.size = 1;
             tmp.elements[0].key = tmp.info.Min = tmp.info.Max = key;
-            tmp.elements[0].address = writedata(value);
+            tmp.elements[0].value = value;
             findex.write(reinterpret_cast <char *> (&tmp), sizeof(node));
             return;
         }
@@ -137,7 +106,7 @@ public:
         // modify data if exist
         if (locat != tmp_node.elements+tmp_node.info.size && locat->key == key)
         {
-            modifydata(locat->address, value);
+            locat->value = value;
             return;
         }
 
@@ -145,7 +114,7 @@ public:
         for (int i = tmp_node.info.size; tmp_node.elements + i != locat; --i)
             tmp_node.elements[i] = tmp_node.elements[i-1];
         locat->key = key;
-        locat->address = writedata(value);
+        locat->value = value;
         tmp_node.info.Min = tmp_node.elements[0].key;
         tmp_node.info.Max = tmp_node.elements[tmp_node.info.size].key;
         tmp_node.info.size++;
@@ -178,7 +147,7 @@ public:
     // find the key and store the value in res, return false if key not found
     bool find(const key_type &key, value_type &res)
     {
-        std::fstream findex, fdata;
+        std::fstream findex;
         findex.open(index_name);
         findex.seekg(0);
         long end;
@@ -192,9 +161,7 @@ public:
         element *locat = std::lower_bound(tmp_node.elements, tmp_node.elements+tmp_node.info.size, tofind);
         if (locat == tmp_node.elements+tmp_node.info.size || !(locat->key == key))
             return false;
-        fdata.open(fname);
-        fdata.seekg(locat->address);
-        fdata.read(reinterpret_cast <char *> (&res), sizeof(value_type));
+        res = locat->value;
         return true;
     }
 
