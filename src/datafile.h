@@ -51,7 +51,7 @@ public:
     {
         std::fstream fdata;
         fdata.open(fname);
-        fdata.seekp(address);
+        fdata.seekg(address);
         fdata.read(reinterpret_cast <char *> (&value), sizeof(value_type));
     }
 };
