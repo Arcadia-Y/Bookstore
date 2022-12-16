@@ -238,17 +238,7 @@ public:
         if (locat != tmp_node.elements + tmp_node.info.size)
         {
             if (!(locat->value == value && locat->key == key)) return false;
-            for ( ; locat != tmp_node.elements + tmp_node.info.size - 1; ++locat)
-                *locat = *(locat+1);
-            tmp_node.info.size--;
-            if (tmp_node.info.size)
-            {
-                tmp_node.info.Min = tmp_node.elements[0];
-                tmp_node.info.Max = tmp_node.elements[tmp_node.info.size-1];
-            }
-            findex.seekp(now);
-            findex.write(reinterpret_cast <char *> (&tmp_node), sizeof(node));
-            return true;
+            goto erasing;
         }
 
         do 
@@ -271,6 +261,8 @@ public:
         }
         while (key == tmp_node.info.Max.key);
         if (locat == tmp_node.elements + tmp_node.info.size) return false;
+
+        erasing:
         for ( ; locat != tmp_node.elements + tmp_node.info.size - 1; ++locat)
                 *locat = *(locat+1);
         tmp_node.info.size--;
