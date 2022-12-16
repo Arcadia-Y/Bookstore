@@ -81,6 +81,7 @@ class Multi_Blocklist
     }
 
 public:
+    // initialization
     Multi_Blocklist(const char *name)
     {
         strcpy(index_name, name);
@@ -96,6 +97,7 @@ public:
         findex.write(reinterpret_cast <char *> (&end), sizeof(long));
     }
 
+    // insert certain element, do nothing if element already exists
     void insert(const key_type &key, const value_type &value)
     {
         std::fstream findex;
@@ -164,6 +166,7 @@ public:
         findex.write(reinterpret_cast <char *> (&end), sizeof(long));
     }
 
+    // return all values with the key in ascending order
     std::vector<value_type> find(const key_type &key)
     {
         std::vector<value_type> res;
@@ -209,6 +212,7 @@ public:
         return res;
     }
 
+    // erase certain element, return false if element not found
     bool erase(const key_type &key, const value_type &value)
     {
         std::fstream findex;
