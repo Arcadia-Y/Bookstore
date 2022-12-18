@@ -18,18 +18,16 @@ class User_System
     char level = '0'; // current priviledge level
     Datafile<User> fdata;
     Blocklist<string31, long> findex;
-    std::vector<char[31]> id_stack;
-    std::vector<char[21]> ISBN_stack;
+    std::vector<std::string> id_stack;
+    std::vector<std::string> ISBN_stack;
     std::vector<char> level_stack;
 
 public:
-    User_System()
-    {
-        fdata("user_data");
-        findex("user_data_index");
-    }
+    User_System():
+    fdata("user_data"), findex("user_data_index")
+    { }
 
-    void login(char id[31])
+    void login(const std::string &id)
     {
         long address;
         if (!findex.find(id, address)) throw 0;
@@ -42,13 +40,13 @@ public:
         level_stack.push_back(user.privilege);
     }
 
-    void login(char id[31], char passwd[31])
+    void login(const std::string &id, const std::string &passwd)
     {
         long address;
         if (!findex.find(id, address)) throw 0;
         User user;
         fdata.read(address, user);
-        if (strcmp(passwd, user.password)) throw 0;
+        if (strcmp(passwd.c_str(), user.password)) throw 0;
         level = user.privilege;
         id_stack.push_back(id);
         ISBN_stack.push_back("");
@@ -68,59 +66,59 @@ public:
     }
 
     // register
-    void rgs(char id[31], char passwd[31], char username[31])
+    void rgs(const std::string &id, const std::string &passwd, const std::string &username)
     {
         long address;
         if (findex.find(id, address)) throw 0;
         User user;
-        strcpy(user.password, passwd);
-        strcpy(user.username, username);
+        strcpy(user.password, passwd.c_str());
+        strcpy(user.username, username.c_str());
         user.privilege = '1';
         address = fdata.write(user);
         findex.assign(id, address);
     }
 
-    void modify_password(char id[31], char newpasswd[31])
+    void modify_password(const std::string &id, const std::string &newpasswd)
     {
         if (level != '7') throw 0;
         long address;
         if (!findex.find(id, address)) throw 0;
         User user;
         fdata.read(address, user);
-        strcpy(user.password, newpasswd);
+        strcpy(user.password, newpasswd.c_str());
         fdata.modify(address, user);
     }
 
-    void modify_password(char id[31], char curpass[31], char newpass[31])
+    void modify_password(const std::string &id, const std::string &curpass, const std::string &newpass)
     {
         long address;
         if (!findex.find(id, address)) throw 0;
         User user;
         fdata.read(address, user);
-        if (strcmp(curpass, user.password)) throw 0;
-        strcpy(user.password, newpasswd);
+        if (strcmp(curpass.c_str(), user.password)) throw 0;
+        strcpy(user.password, newpass.c_str());
         fdata.modify(address, user);
     }
 
-    void adduser(char id[31], char passwd[31], char priv, char username[31])
+    void adduser(const std::string &id, const std::string &passwd, char priv, const std::string &username)
     {
         if (priv >= level) throw 0;
         long address;
         if (findex.find(id, address)) throw 0;
         User user;
-        strcpy(user.password, passwd);
-        strcpy(user.username, username);
+        strcpy(user.password, passwd.c_str());
+        strcpy(user.username, username.c_str());
         user.privilege = priv;
         address = fdata.write(user);
         findex.assign(id, address);
     }
 
-    void deleteuser(char id[31])
+    void deleteuser(const std::string &id)
     {
         long address;
         if (!findex.find(id, address)) throw 0;
         for (auto it = id_stack.begin(); it != id_stack.end(); it++)
-            if (!strcmp(id, *it))
+            if (id == *it)
                 throw 0;
         findex.erase(id);
     }
@@ -132,12 +130,12 @@ public:
     }
 
     // select certain book fot current user
-    void select(char ISBN[21])
+    void select(const std::string &ISBN)
     {
-        strcpy(ISBN_stack.back(), ISBN);
+        ISBN_stack.back() = ISBN;
     }
 
-    char *get_selected()
+    std::string get_selected()
     {
         return ISBN_stack.back();
     }
