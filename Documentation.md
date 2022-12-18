@@ -119,7 +119,7 @@ struct Book
     int remain;
 }
 ```
-声明于book.h，存储一本书籍的信息除ISBN外的信息。
+声明于book_system.h，存储一本书籍的信息除ISBN外的信息。
 
 ```cpp
 class Book_System
