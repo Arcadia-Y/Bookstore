@@ -14,7 +14,7 @@ public:
     Datafile(const char *name)
     {
         strcpy(fname, name);
-        std::fstream fdata,
+        std::fstream fdata;
         if (fdata.good()) return;
         fdata.open(fname, std::ios::out);
         long cursor = sizeof(long);

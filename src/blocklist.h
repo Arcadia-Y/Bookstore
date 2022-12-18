@@ -196,6 +196,28 @@ public:
         findex.write(reinterpret_cast <char *> (&tmp_node), sizeof(node));
         return true;
     }
+
+    // traverse the blocklist and execute func(key, value) 
+    void traverse(void (*func)(const key_type key, const value_type value))
+    {
+        std::fstream findex;
+        findex.open(index_name);
+        findex.seekg(0);
+        long end;
+        findex.read(reinterpret_cast <char *> (&end), sizeof(long));
+        if (end == sizeof(long)) return;
+        node_info tmp_info;
+        element elements[MAX_SIZE];
+        while (true)
+        {
+            findex.read(reinterpret_cast <char *> (&tmp_info), sizeof(node_info));
+            findex.read(reinterpret_cast <char *> (&elements), tmp_info.size * sizeof(element));
+            for (int i = 0; i < tmp_info.size; ++i)
+                func(elements[i].key, elements[i].value);
+            if (!tmp_info.next) break;
+            findex.seekg(tmp_info.next);
+        }
+    }
 };
 
 # endif
