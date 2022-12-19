@@ -54,6 +54,16 @@ public:
         fdata.seekg(address);
         fdata.read(reinterpret_cast <char *> (&value), sizeof(value_type));
     }
+
+    // return end_address of the data
+    long end()
+    {
+        std::fstream fdata;
+        fdata.open(fname);
+        long address;
+        fdata.read(reinterpret_cast <char *> (&address), sizeof(long));
+        return address;
+    }
 };
 
 # endif
