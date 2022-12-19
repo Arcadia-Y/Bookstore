@@ -11,6 +11,7 @@
 
 class Book_System
 {
+    friend class Blocklist<string21, long>;
     struct Book
     {
         char bookname[61];
@@ -25,14 +26,24 @@ class Book_System
     std::string curISBN;
 
     // show information of a book
-    void showbook(const std::string &ISBN, long address)
+    void showbook(const string21 &ISBN, const long address)
     {
         Book book;
         fdata.read(address, book);
         std::cout << std::fixed << std::setprecision(2);
-        std::cout << ISBN << '\t' << book.bookname << '\t' << book.author << '\t' << book.keyword
+        std::cout << ISBN.string << '\t' << book.bookname << '\t' << book.author << '\t' << book.keyword
         << '\t' << book.price << '\t' << book.remain << '\n';
     }
+
+    static void static_showbook(const string21 &ISBN, const long &address)
+    {
+        Datafile<Book> data("book_data");
+        Book book;
+        data.read(address, book);
+        std::cout << std::fixed << std::setprecision(2);
+        std::cout << ISBN.string << '\t' << book.bookname << '\t' << book.author << '\t' << book.keyword
+        << '\t' << book.price << '\t' << book.remain << '\n';
+    } 
 
     void parse_keywords(const std::string &keywords, std::vector<std::string> &res)
     {
@@ -47,7 +58,7 @@ class Book_System
                 buff.clear();
             }
             else
-                buff.append(keywords[i]);
+                buff += keywords[i];
         }
         if (buff.empty()) throw 0;
         res.push_back(buff);
@@ -75,7 +86,7 @@ public:
         switch (type)
         {
             case 0:
-                findex.traverse(showbook);
+                findex.traverse(static_showbook);
                 break;
             case 1:
                 if (!findex.find(info, address))
@@ -155,20 +166,39 @@ public:
                     break;
                 case 1:
                     findex.erase(curISBN);
+                    if (book.bookname[0] != '\0')
+                    {
+                        ISBNindex[0].erase(book.bookname, curISBN);
+                        ISBNindex[0].insert(book.bookname, info_vec[i]);
+                    }
+                    if (book.author[0] != '\0')
+                    {
+                        ISBNindex[1].erase(book.author, curISBN);
+                        ISBNindex[1].insert(book.author, info_vec[i]);
+                    }
+                    if (book.keyword[0] != '\0')
+                    {
+                        std::vector<std::string> curkey;
+                        parse_keywords(book.keyword, curkey);
+                        for (auto it = curkey.begin(); it != curkey.end(); it++)
+                            ISBNindex[2].erase(*it, curISBN);
+                        for (auto it = curkey.begin(); it != curkey.end(); it++)
+                            ISBNindex[2].insert(*it, info_vec[i]);
+                    }
                     curISBN = info_vec[i];
                     findex.assign(curISBN, address);
                     break;
                 case 2:
                     if (book.bookname[0] != '\0')
-                        ISBNindex[0].erase(book.bookname, address);
+                        ISBNindex[0].erase(book.bookname, curISBN);
                     strcpy(book.bookname, info_vec[i].c_str());
-                    ISBNindex[0].insert(book.bookname, address);
+                    ISBNindex[0].insert(book.bookname, curISBN);
                     break;
                 case 3:
                     if (book.author[0] != '\0')
-                        ISBNindex[1].erase(book.author, address);
+                        ISBNindex[1].erase(book.author, curISBN);
                     strcpy(book.author, info_vec[i].c_str());
-                    ISBNindex[1].insert(book.author, address);
+                    ISBNindex[1].insert(book.author, curISBN);
                     break;
                 case 4:
                     if (book.keyword[0] != '\0')
@@ -176,11 +206,11 @@ public:
                         std::vector<std::string> curkey;
                         parse_keywords(book.keyword, curkey);
                         for (auto it = curkey.begin(); it != curkey.end(); it++)
-                            ISBNindex[2].erase(*it, address);
+                            ISBNindex[2].erase(*it, curISBN);
                     }
                     strcpy(book.keyword, info_vec[i].c_str());
                     for (auto it = keywords.begin(); it != keywords.end(); it++)
-                        ISBNindex[2].insert(*it, address);
+                        ISBNindex[2].insert(*it, curISBN);
             }
         }
         fdata.modify(address, book);
@@ -196,7 +226,7 @@ public:
         book.remain -= quantity;
         std::cout << std::fixed << std::setprecision(2);
         std::cout << book.price * quantity << '\n';
-        fdata.modify(address. book);
+        fdata.modify(address, book);
     }
 
     void import_books(int quantity)
