@@ -167,15 +167,15 @@ public:
     }
 
     // return all values with the key in ascending order
-    std::vector<value_type> find(const key_type &key)
+    void find(const key_type &key, std::vector<value_type> &res)
     {
-        std::vector<value_type> res;
+        res.clear();
         std::fstream findex;
         findex.open(index_name);
         findex.seekg(0);
         long end;
         findex.read(reinterpret_cast <char *> (&end), sizeof(long));
-        if (end == sizeof(long)) return res;
+        if (end == sizeof(long)) return;
         long now = seeknode(key);
         findex.seekg(now);
         node tmp_node;
@@ -194,7 +194,7 @@ public:
             res.push_back(locat->value); 
         }
 
-        if (!(key == tmp_node.info.Max.key)) return res;
+        if (!(key == tmp_node.info.Max.key)) return;
         do 
         {
             if (tmp_node.info.next == 0) break;
@@ -209,7 +209,7 @@ public:
             }
         }
         while (key == tmp_node.info.Max.key);
-        return res;
+        return;
     }
 
     // erase certain element, return false if element not found
