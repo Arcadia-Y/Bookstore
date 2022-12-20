@@ -35,13 +35,12 @@ class Scanner
 
     void checkfloat(const std::string &input)
     {
-        if (input.size() > 13 || input.size() < 4) throw 0;
+        if (input.size() > 13) throw 0;
+        bool point = false;
         for (int i = 0; i < input.size(); i++)
         {
-            if (i == input.size() - 3)
-            {
-                if (input[i] != '.') throw 0;
-            }
+            if (input[i] == '.' && !point && i != 0 && i != input.size()-1)
+                point = true;
             else if (input[i] < '0' || input[i] > '9')
                 throw 0;
         }
@@ -80,10 +79,10 @@ class Scanner
             else throw 0;
             if (info.size() > 60 || info.size() < 3) throw 0;
             if (info[0] != '\"' || info.back() != '\"') throw 0;
-            for (int j = 1; i < info.size()-1; i++)
+            for (int j = 1; j < info.size()-1; j++)
             {
                 if (info[j] == '\"') throw 0;
-                info[j-i] = info[j];
+                info[j-1] = info[j];
             }
             info.pop_back();
             info.pop_back();
@@ -216,7 +215,7 @@ public:
                     int type;
                     parse_exp(tokens[1], type, buff);
                     if (type == 5) throw 0;
-                    if (type == 4 && buff.find('|')) throw 0;
+                    if (type == 4 && buff.find('|') != std::string::npos) throw 0;
                     book_system.show(type, buff);
                 }
                 else throw 0;  
@@ -242,6 +241,7 @@ public:
                 if (level < '3' || tokens.size() < 2 || tokens.size() > 6) throw 0;
                 std::vector<int> types;
                 std::vector<std::string> info_vec;
+                std::string newISBN;
                 for (int i = 1; i < tokens.size(); i++)
                 {
                     int type;
@@ -251,8 +251,11 @@ public:
                             throw 0;
                     types.push_back(type);
                     info_vec.push_back(buff);
+                    if (type == 1) newISBN = buff;
                 }
                 book_system.modify(types, info_vec);
+                if (!newISBN.empty())
+                    user_system.update_ISBN(newISBN);
             }
             else if (buff == "import")
             {

@@ -38,7 +38,7 @@ public:
         fdata.read(end_address - sizeof(transaction), tsc1);
         if (!count)
         {
-            std::cout << tsc1.income - tsc1.outlay << '\n';
+            std::cout << "+ " << tsc1.income << " - " << tsc1.outlay << '\n';
             return;
         }
         fdata.read(end_address - sizeof(transaction) * (1 + count), tsc2);
@@ -59,9 +59,16 @@ public:
     }
 
     // record log information
-    void record_log(const std::string &info);
+    void record_log(const std::string &info)
+    {
 
-    void showlog();
+    }
+
+    // todo
+    void showlog()
+    {
+
+    }
 };
 
 # endif

@@ -117,6 +117,7 @@ public:
     void select(const std::string &ISBN)
     {
         curISBN = ISBN;
+        if (ISBN.empty()) return;
         long address;
         if (!findex.find(ISBN, address))
         {
@@ -134,9 +135,10 @@ public:
         ISBN = curISBN;
     }
 
-    // type = 0 for price, 1 for ISBN, 2 for name, 3 for author, 4 for keyword
+    // type = 1 for ISBN, 2 for name, 3 for author, 4 for keyword, 5 for price
     void modify(const std::vector<int> &types, const std::vector<std::string> &info_vec)
     {
+        if (curISBN.empty()) throw 0;
         long address;
         Book book;
         std::vector<std::string> keywords;
@@ -144,8 +146,10 @@ public:
         for (int i = 0; i < types.size(); i++)
         {
             if (types[i] == 1)
+            {
                 if (findex.find(info_vec[i], address))
                     throw 0;
+            }
             else if (types[i] == 4)
             {
                 parse_keywords(info_vec[i], keywords);
@@ -161,7 +165,7 @@ public:
         {
             switch (types[i])
             {
-                case 0:
+                case 5:
                     book.price = std::stod(info_vec[i]);
                     break;
                 case 1:
@@ -216,7 +220,7 @@ public:
         fdata.modify(address, book);
     }
 
-    void buy(const std::string &ISBN, int quantity)
+    double buy(const std::string &ISBN, int quantity)
     {
         long address;
         if (!findex.find(ISBN, address)) throw 0;
@@ -227,6 +231,7 @@ public:
         std::cout << std::fixed << std::setprecision(2);
         std::cout << book.price * quantity << '\n';
         fdata.modify(address, book);
+        return book.price * quantity;
     }
 
     void import_books(int quantity)

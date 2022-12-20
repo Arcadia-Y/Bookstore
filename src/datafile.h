@@ -15,6 +15,7 @@ public:
     {
         strcpy(fname, name);
         std::fstream fdata;
+        fdata.open(fname);
         if (fdata.good()) return;
         fdata.open(fname, std::ios::out);
         long cursor = sizeof(long);

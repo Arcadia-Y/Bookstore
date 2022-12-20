@@ -5,7 +5,7 @@
 #include <cstring>
 #include <algorithm>
 
-#define MAX_SIZE 800
+#define MAX_SIZE 650
 
 template<typename key_type, typename value_type>
 class Blocklist
@@ -198,7 +198,7 @@ public:
     }
 
     // traverse the blocklist and execute func(key, value) 
-    void traverse(void (*func)(const key_type key, const value_type value))
+    void traverse(void (*func)(const key_type &key, const value_type &value))
     {
         std::fstream findex;
         findex.open(index_name);

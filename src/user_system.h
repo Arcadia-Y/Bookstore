@@ -29,11 +29,12 @@ public:
         if (fdata.end() == sizeof(long))
         {
             User user;
-            user.password = "sjtu";
+            strcpy(user.password, "sjtu");
+            strcpy(user.username, "Administrator");
             user.privilege = '7';
-            user.username = "Administrator";
             long address = fdata.write(user);
-            findex.assign("root", user);
+            std::string userid = "root";
+            findex.assign(userid, address);
         }
     }
 
@@ -90,7 +91,6 @@ public:
 
     void modify_password(const std::string &id, const std::string &newpasswd)
     {
-        if (level != '7') throw 0;
         long address;
         if (!findex.find(id, address)) throw 0;
         User user;
@@ -142,12 +142,22 @@ public:
     // select certain book fot current user
     void select(const std::string &ISBN)
     {
+        if (ISBN_stack.empty()) return;
         ISBN_stack.back() = ISBN;
     }
 
     void get_ISBN(std::string &ISBN)
     {
-        ISBN = ISBN_stack.back();
+        if (ISBN_stack.empty()) ISBN.clear();
+        else ISBN = ISBN_stack.back();
+    }
+
+    void update_ISBN(const std::string &newISBN)
+    {
+        std::string curISBN = ISBN_stack.back();
+        for (int i = 0; i < ISBN_stack.size(); i++)
+            if (ISBN_stack[i] == curISBN)
+                ISBN_stack[i] = newISBN;
     }
 };
 
