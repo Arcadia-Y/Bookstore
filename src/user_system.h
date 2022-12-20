@@ -25,7 +25,17 @@ class User_System
 public:
     User_System():
     fdata("user_data"), findex("user_data_index")
-    { }
+    { 
+        if (fdata.end() == sizeof(long))
+        {
+            User user;
+            user.password = "sjtu";
+            user.privilege = '7';
+            user.username = "Administrator";
+            long address = fdata.write(user);
+            findex.assign("root", user);
+        }
+    }
 
     void login(const std::string &id)
     {
@@ -135,9 +145,9 @@ public:
         ISBN_stack.back() = ISBN;
     }
 
-    std::string get_selected()
+    void get_ISBN(std::string &ISBN)
     {
-        return ISBN_stack.back();
+        ISBN = ISBN_stack.back();
     }
 };
 
