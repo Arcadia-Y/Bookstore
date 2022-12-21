@@ -205,7 +205,11 @@ public:
         findex.seekg(0);
         long end;
         findex.read(reinterpret_cast <char *> (&end), sizeof(long));
-        if (end == sizeof(long)) return;
+        if (end == sizeof(long))
+        {
+            std::cout << '\n';
+            return;
+        }
         node_info tmp_info;
         element elements[MAX_SIZE];
         while (true)
