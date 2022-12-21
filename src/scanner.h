@@ -280,6 +280,13 @@ public:
             std::cout << "Invalid\n";
         }
     }
+
+    // return true if program should exit
+    bool exit()
+    {
+        if (tokens.size() != 1) return false;
+        return tokens[0] == "quit" || tokens[0] == "exit";
+    }
 };
 
 # endif
