@@ -17,7 +17,7 @@ class User_System
     };
     char level = '0'; // current priviledge level
     Datafile<User> fdata;
-    Blocklist<string31, long> findex;
+    Blocklist<mystring<31>, long> findex;
     std::vector<std::string> id_stack;
     std::vector<std::string> ISBN_stack;
     std::vector<char> level_stack;

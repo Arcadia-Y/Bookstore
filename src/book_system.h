@@ -11,7 +11,7 @@
 
 class Book_System
 {
-    friend class Blocklist<string21, long>;
+    friend class Blocklist<mystring<21>, long>;
     struct Book
     {
         char bookname[61];
@@ -21,12 +21,12 @@ class Book_System
         int remain = 0;
     };
     Datafile<Book> fdata;
-    Blocklist<string21, long> findex;
-    Multi_Blocklist<string61, string21> *ISBNindex; // 0 for bookname, 1 for author, 2 for keyword
+    Blocklist<mystring<21>, long> findex;
+    Multi_Blocklist<mystring<61>, mystring<21>> *ISBNindex; // 0 for bookname, 1 for author, 2 for keyword
     std::string curISBN;
 
     // show information of a book
-    void showbook(const string21 &ISBN, const long address)
+    void showbook(const mystring<21> &ISBN, const long address)
     {
         Book book;
         fdata.read(address, book);
@@ -35,7 +35,7 @@ class Book_System
         << '\t' << book.price << '\t' << book.remain << '\n';
     }
 
-    static void static_showbook(const string21 &ISBN, const long &address)
+    static void static_showbook(const mystring<21> &ISBN, const long &address)
     {
         Datafile<Book> data("book_data");
         Book book;
@@ -68,7 +68,7 @@ public:
     Book_System():
     fdata("book_data"), findex("book_index")
     {
-        ISBNindex = new  Multi_Blocklist<string61, string21>[3] 
+        ISBNindex = new  Multi_Blocklist<mystring<61>, mystring<21>>[3] 
         {{"bookname_index"}, {"author_index"}, {"keyword_index"}};
     }
 
@@ -81,7 +81,7 @@ public:
     void show(int type, const std::string &info)
     {
         long address;
-        std::vector<string21> str_vec;
+        std::vector<mystring<21>> str_vec;
         std::string ISBN;
         switch (type)
         {
