@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstring>
 #include <vector>
+#include <ctype.h>
 #include "book_system.h"
 #include "user_system.h"
 #include "log_system.h"
@@ -20,8 +21,7 @@ class Scanner
     {
         if (id.size() > 30) throw 0;
         for (int i = 0; i < id.size(); i++)
-            if ((id[i] < '0' || id [i] > '9') && (id[i] < 'A' || id [i] > 'Z') && 
-                (id[i] < 'a' || id [i] > 'z') && id[i] != '_')
+            if (!isalnum(id[i]) && id[i] != '_')
                 throw 0;
     }
 
@@ -95,6 +95,7 @@ public:
     {
         tokens.clear();
         std::string buff;
+        bool visible = true;
         int i = 0;
         for (int i = 0; i < line.size(); i++)
         {
@@ -106,10 +107,20 @@ public:
                     buff.clear();
                 }
             }
-            else
+            else if (isprint(line[i]))
                 buff += line[i];  
+            else
+            {
+                visible = false;
+                break;
+            }
         }
         if (!buff.empty()) tokens.push_back(buff);
+        if (!visible)
+        {
+            tokens.clear();
+            tokens.push_back("L");
+        }
     }
 
     // execute the parsed line
