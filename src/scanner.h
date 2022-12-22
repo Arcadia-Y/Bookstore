@@ -119,7 +119,7 @@ public:
         if (!visible)
         {
             tokens.clear();
-            tokens.push_back("L");
+            tokens.push_back("Law");
         }
     }
 
