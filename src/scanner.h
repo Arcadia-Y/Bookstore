@@ -296,6 +296,12 @@ public:
                 if (level != '7' || tokens.size() != 1) throw 0;
                 log_system.showlog();
             }
+            else if (buff == "exit" || buff == "quit")
+            {
+                if (tokens.size() != 1) throw 0;
+                log_system.record_log(buff);
+                exit(0);
+            }
             else throw 0;
 
             if (!userid_stack.empty())
@@ -308,18 +314,6 @@ public:
         {
             std::cout << "Invalid\n";
         }
-    }
-
-    // return true if program should exit
-    bool exit()
-    {
-        if (tokens.size() != 1) return false;
-        if (tokens[0] == "quit" || tokens[0] == "exit")
-        {
-            log_system.record_log(tokens[0]);
-            return true;
-        }
-        return false;
     }
 };
 
