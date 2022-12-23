@@ -11,7 +11,6 @@
 
 class Book_System
 {
-    friend class Blocklist<mystring<21>, long>;
     struct Book
     {
         char bookname[61];

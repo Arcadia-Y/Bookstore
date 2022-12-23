@@ -15,6 +15,7 @@ class Scanner
     Book_System book_system;
     Log_System log_system;
     std::vector<std::string> tokens;
+    std::vector<std::string> userid_stack;
     char level = '0';
 
     void checkid(const std::string &id)
@@ -126,6 +127,7 @@ public:
     // execute the parsed line
     void execute()
     {
+        std::string info;
         try
         {
             if (tokens.empty()) return;
@@ -143,6 +145,11 @@ public:
                     level = user_system.get_level();
                 }
                 else throw 0;
+                userid_stack.push_back(tokens[1]);
+                info.append(tokens[1]);
+                info.append("\tlogin");
+                log_system.record_log(info);
+                return;
             }
             else if (buff == "logout")
             {
@@ -152,6 +159,11 @@ public:
                 level = user_system.get_level();
                 user_system.get_ISBN(ISBN);
                 book_system.select(ISBN);
+                info.append(userid_stack.back());
+                userid_stack.pop_back();
+                info.append("\tlogout");
+                log_system.record_log(info);
+                return;
             }
             else if (buff == "register")
             {
@@ -285,6 +297,12 @@ public:
                 log_system.showlog();
             }
             else throw 0;
+
+            if (!userid_stack.empty())
+                info.append(userid_stack.back() + "\t" );
+            for (int i = 0; i < tokens.size(); i++)
+                info.append(tokens[i] + " ");
+            log_system.record_log(info);
         }
         catch(int)
         {
@@ -296,7 +314,12 @@ public:
     bool exit()
     {
         if (tokens.size() != 1) return false;
-        return tokens[0] == "quit" || tokens[0] == "exit";
+        if (tokens[0] == "quit" || tokens[0] == "exit")
+        {
+            log_system.record_log(tokens[0]);
+            return true;
+        }
+        return false;
     }
 };
 

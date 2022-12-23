@@ -11,8 +11,9 @@ int main()
     {
         std::string line;
         if (std::cin.eof())
-            return 0;
-        getline(std::cin, line);
+            line = "quit";
+        else 
+            getline(std::cin, line);
         scanner.parseline(line);
         if (scanner.exit())
             return 0;

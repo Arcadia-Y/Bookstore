@@ -5,6 +5,8 @@
 #include <iomanip>
 #include "datafile.h"
 
+#define LOG_SIZE 50
+
 class Log_System
 {
     struct transaction
@@ -12,11 +14,17 @@ class Log_System
         double income;
         double outlay;
     };
+    struct log
+    {
+        char content[LOG_SIZE + 1];
+        bool end = false;
+    };
     long end_address;
     Datafile<transaction> fdata;
+    Datafile<log> logdata;
 
 public:
-    Log_System(): fdata("finance_data")
+    Log_System(): fdata("finance_data"), logdata("log_data")
     { 
         end_address = fdata.end();
         if (end_address == sizeof(long))
@@ -59,15 +67,47 @@ public:
     }
 
     // record log information
-    void record_log(const std::string &info)
+    void record_log(std::string &info)
     {
-
+        log tmp;
+        while (true)
+        {
+            strncpy(tmp.content, info.c_str(), LOG_SIZE + 1);
+            if (info.size() <= LOG_SIZE)
+            {
+                tmp.end = true;
+                logdata.write(tmp);
+                break;
+            }
+            info = info.substr(LOG_SIZE + 1);
+            logdata.write(tmp);
+        }
     }
 
-    // todo
+    // show log information
     void showlog()
     {
-
+        long address = sizeof(long);
+        long end = logdata.end();
+        log tmp;
+        std::string info;
+        std::cout << "----------------------------\n";
+        std::cout << "Log for Bookstore\n";
+        std::cout << "----------------------------\n";
+        while (address < end)
+        {
+            logdata.read(address, tmp);
+            if (tmp.end)
+            {
+                 info.append(tmp.content);
+                 std::cout << info << '\n';
+                 info.clear();
+            }
+            else
+                info.append(tmp.content, LOG_SIZE + 1);
+            address += sizeof(log);
+        }
+        std::cout << "----------------------------\n";
     }
 };
 
